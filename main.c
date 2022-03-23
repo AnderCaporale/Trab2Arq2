@@ -1,3 +1,5 @@
+//Main lendo do console
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,17 +19,16 @@ int main()
    
     while(1){
 
-        gets(entrada);
+        gets(entrada);      //Pega a entrada
 
-        
-        for (i=0; i < strlen(entrada); i++){
+        for (i=0; i < strlen(entrada); i++){    //Pega a primeira palavra
             if (entrada[i] == ' '){
                 break;
             }
             aux1[i] = entrada[i];
         }
 
-        for (i=0, j=0; i < strlen(entrada); i++){
+        for (i=0, j=0; i < strlen(entrada); i++){   //Pega a segunda palavra
             if (entrada[i] == ' '){
                 espaco = 1;
                 continue;
@@ -39,11 +40,8 @@ int main()
         }
         espaco = 0;
         
-        //puts(aux1);
-        //puts(aux2);
-
+        //Faz as comparaçoes para ver qual função chamar
         if (strcmp("ADD", aux1) == 0){
-            printf("Fazer soma\n");
             registrador = ADD(pilha, pTopo);
             printf("%d", registrador);
             
@@ -51,7 +49,6 @@ int main()
             printf("Fazer subtracao\n");
 
         } else if(strcmp("CLEAR", entrada) == 0){
-            printf("Limpar pilha\n");
             CLEAR(pilha, pTopo);
 
         } else if(strcmp("EXIT", entrada) == 0){
@@ -67,21 +64,14 @@ int main()
             }
             
         } else if(strcmp("POP", aux1) == 0){
-            valor = atoi(aux2);
-            //printf("Fazer push %d\n", valor);
             pop(pTopo);
         }
         
-
         limpaEntrada(aux1, aux2, pEspaco);
     }
 
 
-    //push(pilha, pTopo, 11);
-    //registrador = NOT(pilha, pTopo);
-    //printf("%d", registrador);
-
-    imprimePilha(pilha,pTopo);
+    imprimePilha(pilha,pTopo);      
 
     return 0;
 }

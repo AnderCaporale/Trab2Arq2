@@ -1,3 +1,5 @@
+
+//Transforma um numero decimal para binario (sinal magnitude)
 void decToBin(int num, int bin[])
 {   
     if (num < 0){
@@ -16,6 +18,7 @@ void decToBin(int num, int bin[])
     }
 }
 
+//Transforma um numero binario para decimal
 int binToDec(int vetor[]){
     int total = 0;
     int i, j=1;
@@ -30,14 +33,12 @@ int binToDec(int vetor[]){
     return total;
 }
 
+
+//Transforma o numero para binario de depois troca os 1 e 0s
 int NOT(int pilha[], int *pTopo){
 
     int vetor[16];
     decToBin(pilha[*pTopo], vetor);
-
-    for (int i = 0; i < 16; i++)
-        printf("%d", vetor[i]);
-    printf("\n");
 
     for (int i=0; i<16; i++){
         if (vetor[i] == 0){
@@ -47,14 +48,11 @@ int NOT(int pilha[], int *pTopo){
         }
     }
 
-    for (int i = 0; i < 16; i++)
-        printf("%d", vetor[i]);
-    printf("\n");
-
     return binToDec(vetor);
 }
 
 
+//Transforma o numero para binario de depois inverte a sequencia
 int MIR(int pilha[], int *pTopo){
 
     int vetor[16], aux[16], i,j;
@@ -73,6 +71,7 @@ int MIR(int pilha[], int *pTopo){
 }
 
 
+//Transforma os 2 primeiros numeros da pilha pra binario e faz o OR entre eles
 int OR(int pilha[], int *pTopo){
 
     int primeiro[16], segundo[16], i, aux[16];
@@ -91,6 +90,7 @@ int OR(int pilha[], int *pTopo){
     return binToDec(aux);
 }
 
+//Transforma os 2 primeiros numeros da pilha pra binario e faz o AND entre eles
 int AND(int pilha[], int *pTopo){
 
     int primeiro[16], segundo[16], i, aux[16];

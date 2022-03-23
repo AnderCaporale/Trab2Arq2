@@ -1,3 +1,5 @@
+
+//Coloca um numero no topo da pilha e incrementa o topo
 void push(int pilha[], int *pTopo, int valor)
 {
     if(*pTopo == 129) {
@@ -11,7 +13,7 @@ void push(int pilha[], int *pTopo, int valor)
     }
 }
 
-
+//Remove um numero do topo da pilha e decrementa o topo
 void pop(int *pTopo)
 {
     if(*pTopo == -1) {

@@ -12,18 +12,19 @@
 int main()
 {
     int pilha[128] = {};
-    int topo = 125, *pTopo = &topo;
-    int registrador = 0, *pRegistrador = &registrador;
+    int topo = -1, *pTopo = &topo;
     int valor, espaco=0, *pEspaco = &espaco;
     char entrada[16];
 
-    int menu;
+    int menu = 0;
 
     char letra;
     int i = 0, j = 0;
     int PeV = 0;
     char linha[25] = {}, num[10] = {}, inst[10] = {};
     char nomeArquivo[20];
+    int registradores[5] = {0,0,0,0,0};
+
 
     while(1){
 
@@ -50,60 +51,69 @@ int main()
                     espaco = 1;
                     continue;
                 }
-                if (espaco == 1){
+                if (espaco == 1 && entrada[i] != ' ' && entrada[i] != '\n' && entrada[i] != ','){
                     num[j] = entrada[i];
                     j++;
                 }
             }
             espaco = 0;
 
-            if (operacoes(pilha, pTopo, pRegistrador, inst, num)){
+            if (operacoes(pilha, pTopo, registradores, inst, num)){
                 menu = -1;
             }
 
             limpaEntrada(inst, num, pEspaco);
 
-    } while(menu == 2) {
+        } while(menu == 2) {
+            FILE *file;
+            printf("Digite o nome do arquivo: ");
+            scanf("%s", nomeArquivo);
+            file = fopen(nomeArquivo, "r");
 
-        FILE *file;
-        printf("Digite o nome do arquivo: ");
-        scanf("%s", nomeArquivo);
-        file = fopen(nomeArquivo, "r");
-
-        if(file != NULL) {      //Se acha o arquivo
-        while(!feof(file)) {     //Enquanto nao chegou no fim do arquivo
-            letra = fgetc(file);     //Pega letra por letra
-            if(letra != '\n') {      //Até o fim da linha
-                if(letra == ';') {PeV = 1;}      //Se chegou em um ; para de salvar
-                if(PeV != 1) {           //Se ainda não chegou em um ;
-                    linha[i] = letra;
-                    i++;
+            if(file != NULL) {      //Se acha o arquivo
+                while(!feof(file)) {     //Enquanto nao chegou no fim do arquivo
+                    letra = fgetc(file);     //Pega letra por letra
+                    if(letra != '\n' && letra != EOF) {      //Até o fim da linha
+                        if(letra == ';') {PeV = 1;}      //Se chegou em um ; para de salvar
+                        if(PeV != 1) {           //Se ainda não chegou em um ;
+                            linha[i] = letra;
+                            i++;
+                            }
+                    } else {    //Qnd chega no fim da linha
+                        if(strlen(linha) > 0) {     //Se leu mais de alguma letra
+                            trataInst(linha, inst, num, i);
+                            //puts(inst);
+                            
+                            operacoes(pilha, pTopo, registradores, inst, num);
+                        }
+                        
+                        memset(linha, 0, 25);       //Limpa a string para salvar a proxima linha
+                        memset(inst, 0, 10);
+                        memset(num, 0, 10);
+                        i = 0;                      //Reseta marcadores
+                        PeV = 0;
                     }
-                } else {    //Qnd chega no fim da linha
-                    if(strlen(linha) > 0) {     //Se leu mais de alguma letra
-                        trataInst(linha, inst, num, i);
-                        operacoes(pilha, pTopo, pRegistrador, inst, num);
-                    }
-                    
-                    memset(linha, 0, 25);       //Limpa a string para salvar a proxima linha
-                    i = 0;                      //Reseta marcadores
-                    PeV = 0;
                 }
+                printf("\nFIM DO ARQUIVO\n");
+                
+            } 
+
+            menu = 0;
+            fclose(file);
+
             }
-        }
 
-        fclose(file);
-        }
-
-        if(menu == 3){
-            return 0;
-        } else if(menu == -1) {
-            printf("Finalizado com erro.\n\n");
-        }else {
-            printf("Escolha uma das opcoes acima.\n\n");
-        }
+            if(menu == 3){
+                printf("\nfinal do programa\n");
+                return 0;
+            } else if(menu == -1) {
+                printf("Finalizado com erro.\n\n");
+            } else {
+                printf("Escolha uma das opcoes acima.\n\n");
+            }
     }
 
+    printf("\nfinal do programa\n");
     return 0;
 }
 
@@ -124,14 +134,24 @@ void trataInst (char linha[], char inst[], char num[], int i) {
     int j;
 
     for(i = 0; i < strlen(linha); i++) {
-        if(linha[i] != ' ') {       //Enquanto nao ler espaço, salva as letras na string de instrução
+        if(linha[i] != ' ' && linha[i] != '\n'){       //Enquanto nao ler espaço, salva as letras na string de instrução
             inst[i] = linha[i];
         } else {
             inst[i] = '\0';     //Qnd chega no espaço, coloca um fim de linha na instrução
-            for(j = 0; i < strlen(linha); i++) {    //Salva o numero ou registrador
-                if(linha[i] != ' '){        //Enquanto nao ler espaço, salva valores na string de numeros
-                    num[j] = linha[i];
-                    j++;
+
+            if (strcmp("MOV", inst) == 0){
+                for(j = 0; i < strlen(linha); i++) {    //Salva o numero ou registrador
+                    if(linha[i] != ',' && linha[i] != ' '){       
+                        num[j] = linha[i];
+                        j++;
+                    }
+                }
+            } else{
+                for(j = 0; i < strlen(linha); i++) {    //Salva o numero ou registrador
+                    if(linha[i] != ' '){        //Enquanto nao ler espaço, salva valores na string de numeros
+                        num[j] = linha[i];
+                        j++;
+                    }
                 }
             }
             num[j] = '\0';  //Coloca um fim de linha para remover o espaço em branco.
@@ -141,7 +161,7 @@ void trataInst (char linha[], char inst[], char num[], int i) {
 }
 
 
-int operacoes(int pilha[], int *pTopo, int *pRegistrador, char inst[], char num[]){
+int operacoes(int pilha[], int *pTopo, int registradores[], char inst[], char num[]){
 
     int valor;
 
@@ -150,7 +170,7 @@ int operacoes(int pilha[], int *pTopo, int *pRegistrador, char inst[], char num[
             printf("000 - Erro de sintaxe. É esperado zero operando\n");
             return 1;
         } else{
-            *pRegistrador = ADD(pilha, pTopo);  //Faz a soma e salva no registrador
+            registradores[0] = ADD(pilha, pTopo);  //Faz a soma e salva no registrador
         }
 
     } else if(strcmp("SUB", inst) == 0){
@@ -158,7 +178,7 @@ int operacoes(int pilha[], int *pTopo, int *pRegistrador, char inst[], char num[
             printf("000 - Erro de sintaxe. É esperado zero operando\n");
             return 1;
         } else{
-            *pRegistrador = SUB(pilha, pTopo); 
+            registradores[0] = SUB(pilha, pTopo); 
         }
         
     } else if(strcmp("MUL", inst) == 0){
@@ -166,7 +186,7 @@ int operacoes(int pilha[], int *pTopo, int *pRegistrador, char inst[], char num[
             printf("000 - Erro de sintaxe. É esperado zero operando\n");
             return 1;
         } else{
-            *pRegistrador = MUL(pilha, pTopo);   
+            registradores[0] = MUL(pilha, pTopo);   
         }
         
     } else if(strcmp("DIV", inst) == 0){
@@ -174,7 +194,7 @@ int operacoes(int pilha[], int *pTopo, int *pRegistrador, char inst[], char num[
             printf("000 - Erro de sintaxe. É esperado zero operando\n");
             return 1;
         } else{
-            *pRegistrador = DIV(pilha, pTopo); 
+            registradores[0] = DIV(pilha, pTopo); 
         }
              
     } else if(strcmp("MOD", inst) == 0){
@@ -182,7 +202,7 @@ int operacoes(int pilha[], int *pTopo, int *pRegistrador, char inst[], char num[
             printf("000 - Erro de sintaxe. É esperado zero operando\n");
             return 1;
         } else{
-            *pRegistrador = MOD(pilha, pTopo);   
+            registradores[0] = MOD(pilha, pTopo);   
         }
            
     } else if(strcmp("NOT", inst) == 0){
@@ -190,7 +210,7 @@ int operacoes(int pilha[], int *pTopo, int *pRegistrador, char inst[], char num[
             printf("000 - Erro de sintaxe. É esperado zero operando\n");
             return 1;
         } else{
-            *pRegistrador = NOT(pilha, pTopo);     
+            registradores[0] = NOT(pilha, pTopo);     
         }
              
     } else if(strcmp("OR", inst) == 0){
@@ -198,7 +218,7 @@ int operacoes(int pilha[], int *pTopo, int *pRegistrador, char inst[], char num[
             printf("000 - Erro de sintaxe. É esperado zero operando\n");
             return 1;
         } else{
-            *pRegistrador = OR(pilha, pTopo);     
+            registradores[0] = OR(pilha, pTopo);     
         }        
         
     } else if(strcmp("AND", inst) == 0){
@@ -206,7 +226,7 @@ int operacoes(int pilha[], int *pTopo, int *pRegistrador, char inst[], char num[
             printf("000 - Erro de sintaxe. É esperado zero operando\n");
             return 1;
         } else{
-            *pRegistrador = AND(pilha, pTopo);    
+            registradores[0] = AND(pilha, pTopo);    
         }
                   
     } else if(strcmp("MIR", inst) == 0){
@@ -214,26 +234,36 @@ int operacoes(int pilha[], int *pTopo, int *pRegistrador, char inst[], char num[
             printf("000 - Erro de sintaxe. É esperado zero operando\n");
             return 1;
         } else{
-            *pRegistrador = MIR(pilha, pTopo);   
+            registradores[0] = MIR(pilha, pTopo);   
         }
                  
     } else if(strcmp("PUSH", inst) == 0){
+        
         if (num[0] != NULL){
             if (*pTopo < 127){        
-                if (strcmp("$R", num) == 0){        //Se é para salvar o registrador
-                    push(pilha, pTopo, *pRegistrador);
+                if (strcmp("$R0", num) == 0){        //Se é para salvar o registrador
+                    push(pilha, pTopo, registradores[0]);
+                } else if(strcmp("$R1", num) == 0) {
+                    push(pilha, pTopo, registradores[1]);
+                } else if(strcmp("$R2", num) == 0) {
+                    push(pilha, pTopo, registradores[2]);
+                } else if(strcmp("$R3", num) == 0) {
+                    push(pilha, pTopo, registradores[3]);
+                } else if(strcmp("$R4", num) == 0) {
+                    push(pilha, pTopo, registradores[4]);
                 } else{     //Ou um numero
                     valor = atoi(num);      //Transforma string para numero
                     push(pilha, pTopo, valor);
                 }
             } else{
-                printf("ERRO 004 - Fila Cheia!\n");
+                printf("ERRO 004 - Pilha Cheia!\n");
                 return 1;
             }
         } else {
             printf("000 - Erro de sintaxe. E esperado 1 operando\n");
             return 1;
         }
+
         
     } else if(strcmp("POP", inst) == 0){
         if (num[0] != NULL){
@@ -241,18 +271,27 @@ int operacoes(int pilha[], int *pTopo, int *pRegistrador, char inst[], char num[
             return 1;
         } else{
             if (*pTopo == -1){
-                printf("ERRO 003 - Fila Vazia!\n");
+                printf("ERRO 003 - Pilha Vazia!\n");
                 return 1;
             }
             pop(pTopo);
         }
 
+    } else if(strcmp("MOV", inst) == 0){
+        int reg1=0, reg2=0;
+        reg1 = num[2] - '0';
+        reg2 = num[5] - '0';
+        mov(registradores, reg1, reg2);
+
     } else if(strcmp("OUT", inst) == 0){
         if (*pTopo == -1){
-            printf("ERRO 003 - Fila Vazia!\n");
+            printf("ERRO 003 - Pilha Vazia!\n");
             return 1;
         }
         printf("%d\n", OUT(pilha, pTopo));
+
+    } else if(strcmp("REGS", inst) == 0){
+        regs(registradores);
 
     } else if(strcmp("CLEAR", inst) == 0){
         CLEAR(pilha, pTopo);            
@@ -270,3 +309,8 @@ int operacoes(int pilha[], int *pTopo, int *pRegistrador, char inst[], char num[
     return 0;
     
 }
+
+
+
+
+

@@ -28,3 +28,16 @@ void pop(int *pTopo)
 }
 
 
+void mov(int registradores[], int origem, int destino){
+    registradores[destino] =  registradores[origem];
+}
+
+
+void regs(int registradores[]){
+    int i;
+    printf("[");
+    for(i=0; i<5; i++){
+        printf("%d ", registradores[i]);
+    }
+    printf("]\n");
+}

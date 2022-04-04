@@ -48,6 +48,7 @@ int DIV(int pilha[], int *pTopo)
         return 1;
     }
     else {
+        //printf("\n %d \n", pilha[*pTopo - 1]);
         return pilha[*pTopo] / pilha[*pTopo - 1];
     }
 }

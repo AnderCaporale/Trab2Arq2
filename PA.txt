@@ -1,0 +1,53 @@
+PUSH 0	    
+PUSH 2	    
+ADD		    
+POP		    
+MOV $R0,$R1     ;salva A1 no registrador $R1
+PUSH 3	
+ADD		
+MOV $R0,$R2     ;salva N no registrador $R2
+POP
+PUSH 2	
+ADD		
+MOV $R0,$R3     ;salva R no registrador $R3
+POP
+POP
+
+PUSH 1
+PUSH $R2
+SUB		        ;(N - 1)
+POP
+POP
+PUSH $R0
+PUSH $R3
+MUL		        ;(N - 1) * R
+POP
+POP
+PUSH $R0
+PUSH $R1
+ADD		        ;A1 + (N-1) * R
+POP
+POP
+MOV $R0,$R3	    ;salva An no registrador $R3
+
+PUSH $R0
+PUSH $R1
+ADD		        ;A1 + An
+POP
+POP
+PUSH 2
+PUSH $R0
+DIV		        ;(A1 + An) / 2
+POP
+POP
+PUSH $R2
+PUSH $R0
+MUL		        ;((A1 + An) / 2) * N
+POP
+POP
+
+PUSH $R0
+OUT
+PUSH $R3
+OUT
+

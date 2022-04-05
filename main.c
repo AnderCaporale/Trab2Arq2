@@ -19,6 +19,7 @@ int main()
     int menu = 0;
 
     char letra;
+    int numLinha = 1;
     int i = 0, j = 0;
     int PeV = 0;
     char linha[25] = {}, num[10] = {}, inst[10] = {};
@@ -58,7 +59,7 @@ int main()
             }
             espaco = 0;
 
-            if (operacoes(pilha, pTopo, registradores, inst, num)){
+            if (operacoes(pilha, pTopo, registradores, inst, num, numLinha)){
                 menu = -1;
             }
 
@@ -76,15 +77,19 @@ int main()
                     if(letra != '\n' && letra != EOF) {      //Até o fim da linha
                         if(letra == ';') {PeV = 1;}      //Se chegou em um ; para de salvar
                         if(PeV != 1) {           //Se ainda não chegou em um ;
+                            toUpperCase(&letra);
                             linha[i] = letra;
                             i++;
-                            }
+                        }
                     } else {    //Qnd chega no fim da linha
+                        
                         if(strlen(linha) > 0) {     //Se leu mais de alguma letra
                             trataInst(linha, inst, num, i);
                             //puts(inst);
-                            
-                            operacoes(pilha, pTopo, registradores, inst, num);
+                            if (operacoes(pilha, pTopo, registradores, inst, num, numLinha)){
+                                menu = -1;
+                                break;
+                            }
                         }
                         
                         memset(linha, 0, 25);       //Limpa a string para salvar a proxima linha
@@ -92,11 +97,14 @@ int main()
                         memset(num, 0, 10);
                         i = 0;                      //Reseta marcadores
                         PeV = 0;
+                        numLinha++;
                     }
                 }
                 printf("\nFIM DO ARQUIVO\n");
                 
-            } 
+            } else {
+                printf("Arquivo nao encontrado.");
+            }
 
             menu = 0;
             fclose(file);
@@ -104,10 +112,12 @@ int main()
             }
 
             if(menu == 3){
-                printf("\nfinal do programa\n");
+                printf("\nPrograma Encerrado\n");
                 return 0;
             } else if(menu == -1) {
                 printf("Finalizado com erro.\n\n");
+            } else if(menu == 0) {
+                printf("Programa finalizado.\n\n");
             } else {
                 printf("Escolha uma das opcoes acima.\n\n");
             }
@@ -146,9 +156,9 @@ void trataInst (char linha[], char inst[], char num[], int i) {
                         j++;
                     }
                 }
-            } else{
+            } else {
                 for(j = 0; i < strlen(linha); i++) {    //Salva o numero ou registrador
-                    if(linha[i] != ' '){        //Enquanto nao ler espaço, salva valores na string de numeros
+                    if(linha[i] != ' ' && linha[i] != '\t'){        //Enquanto nao ler espaço, salva valores na string de numeros
                         num[j] = linha[i];
                         j++;
                     }
@@ -161,53 +171,53 @@ void trataInst (char linha[], char inst[], char num[], int i) {
 }
 
 
-int operacoes(int pilha[], int *pTopo, int registradores[], char inst[], char num[]){
+int operacoes(int pilha[], int *pTopo, int registradores[], char inst[], char num[], int numLinha){
 
     int valor;
 
     if (strcmp("ADD", inst) == 0){
         if (num[0] != NULL){
-            printf("000 - Erro de sintaxe. É esperado zero operando\n");
+            printf("Linha %d 000 - Erro de sintaxe. É esperado zero operando\n",numLinha);
             return 1;
         } else{
-            registradores[0] = ADD(pilha, pTopo);  //Faz a soma e salva no registrador
+            registradores[0] = ADD(pilha, pTopo, numLinha);  //Faz a soma e salva no registrador
         }
 
     } else if(strcmp("SUB", inst) == 0){
         if (num[0] != NULL){
-            printf("000 - Erro de sintaxe. É esperado zero operando\n");
+            printf("Linha %d 000 - Erro de sintaxe. É esperado zero operando\n",numLinha);
             return 1;
         } else{
-            registradores[0] = SUB(pilha, pTopo); 
+            registradores[0] = SUB(pilha, pTopo, numLinha);
         }
         
     } else if(strcmp("MUL", inst) == 0){
         if (num[0] != NULL){
-            printf("000 - Erro de sintaxe. É esperado zero operando\n");
+            printf("Linha %d 000 - Erro de sintaxe. É esperado zero operando\n",numLinha);
             return 1;
         } else{
-            registradores[0] = MUL(pilha, pTopo);   
+            registradores[0] = MUL(pilha, pTopo, numLinha);
         }
         
     } else if(strcmp("DIV", inst) == 0){
         if (num[0] != NULL){
-            printf("000 - Erro de sintaxe. É esperado zero operando\n");
+            printf("Linha %d 000 - Erro de sintaxe. É esperado zero operando\n",numLinha);
             return 1;
         } else{
-            registradores[0] = DIV(pilha, pTopo); 
+            registradores[0] = DIV(pilha, pTopo, numLinha);
         }
              
     } else if(strcmp("MOD", inst) == 0){
         if (num[0] != NULL){
-            printf("000 - Erro de sintaxe. É esperado zero operando\n");
+            printf("Linha %d 000 - Erro de sintaxe. É esperado zero operando\n",numLinha);
             return 1;
         } else{
-            registradores[0] = MOD(pilha, pTopo);   
+            registradores[0] = MOD(pilha, pTopo, numLinha);  
         }
            
     } else if(strcmp("NOT", inst) == 0){
         if (num[0] != NULL){
-            printf("000 - Erro de sintaxe. É esperado zero operando\n");
+            printf("Linha %d 000 - Erro de sintaxe. É esperado zero operando\n",numLinha);
             return 1;
         } else{
             registradores[0] = NOT(pilha, pTopo);     
@@ -215,7 +225,7 @@ int operacoes(int pilha[], int *pTopo, int registradores[], char inst[], char nu
              
     } else if(strcmp("OR", inst) == 0){
         if (num[0] != NULL){
-            printf("000 - Erro de sintaxe. É esperado zero operando\n");
+            printf("Linha %d 000 - Erro de sintaxe. É esperado zero operando\n",numLinha);
             return 1;
         } else{
             registradores[0] = OR(pilha, pTopo);     
@@ -223,7 +233,7 @@ int operacoes(int pilha[], int *pTopo, int registradores[], char inst[], char nu
         
     } else if(strcmp("AND", inst) == 0){
         if (num[0] != NULL){
-            printf("000 - Erro de sintaxe. É esperado zero operando\n");
+            printf("Linha %d 000 - Erro de sintaxe. É esperado zero operando\n",numLinha);
             return 1;
         } else{
             registradores[0] = AND(pilha, pTopo);    
@@ -231,7 +241,7 @@ int operacoes(int pilha[], int *pTopo, int registradores[], char inst[], char nu
                   
     } else if(strcmp("MIR", inst) == 0){
         if (num[0] != NULL){
-            printf("000 - Erro de sintaxe. É esperado zero operando\n");
+            printf("Linha %d 000 - Erro de sintaxe. É esperado zero operando\n",numLinha);
             return 1;
         } else{
             registradores[0] = MIR(pilha, pTopo);   
@@ -241,7 +251,7 @@ int operacoes(int pilha[], int *pTopo, int registradores[], char inst[], char nu
         
         if (num[0] != NULL){
             if (*pTopo < 127){        
-                if (strcmp("$R0", num) == 0){        //Se é para salvar o registrador
+                if (strcmp("$R", num) == 0){        //Se é para salvar o registrador
                     push(pilha, pTopo, registradores[0]);
                 } else if(strcmp("$R1", num) == 0) {
                     push(pilha, pTopo, registradores[1]);
@@ -256,22 +266,22 @@ int operacoes(int pilha[], int *pTopo, int registradores[], char inst[], char nu
                     push(pilha, pTopo, valor);
                 }
             } else{
-                printf("ERRO 004 - Pilha Cheia!\n");
+                printf("Linha %d ERRO 004 - Pilha Cheia!\n",numLinha);
                 return 1;
             }
         } else {
-            printf("000 - Erro de sintaxe. E esperado 1 operando\n");
+            printf("Linha %d 000 - Erro de sintaxe. E esperado 1 operando\n",numLinha);
             return 1;
         }
 
         
     } else if(strcmp("POP", inst) == 0){
         if (num[0] != NULL){
-            printf("000 - Erro de sintaxe. É esperado zero operando\n");
+            printf("Linha %d 000 - Erro de sintaxe. É esperado zero operando\n",numLinha);
             return 1;
         } else{
             if (*pTopo == -1){
-                printf("ERRO 003 - Pilha Vazia!\n");
+                printf("Linha %d ERRO 003 - Pilha Vazia!\n",numLinha);
                 return 1;
             }
             pop(pTopo);
@@ -279,13 +289,26 @@ int operacoes(int pilha[], int *pTopo, int registradores[], char inst[], char nu
 
     } else if(strcmp("MOV", inst) == 0){
         int reg1=0, reg2=0;
-        reg1 = num[2] - '0';
-        reg2 = num[5] - '0';
+        if (strlen(num) < 5){
+            return 0;
+        }
+        if (strlen(num) == 5){
+            if (num[2] == '$'){
+                reg1 = 0;
+                reg2 = num[4] - '0';
+            } else{
+                reg2 = 0;
+                reg1 = num[2] - '0';
+            }
+        } else {
+            reg1 = num[2] - '0';
+            reg2 = num[5] - '0';
+        }
         mov(registradores, reg1, reg2);
 
     } else if(strcmp("OUT", inst) == 0){
         if (*pTopo == -1){
-            printf("ERRO 003 - Pilha Vazia!\n");
+            printf("Linha %d ERRO 003 - Pilha Vazia!\n",numLinha);
             return 1;
         }
         printf("%d\n", OUT(pilha, pTopo));
@@ -297,12 +320,13 @@ int operacoes(int pilha[], int *pTopo, int registradores[], char inst[], char nu
         CLEAR(pilha, pTopo);            
         
     } else if(strcmp("EXIT", inst) == 0){
-        printf("Programa Encerrado\n\n");
+        printf("Linha %d Programa Encerrado\n\n",numLinha);
         CLEAR(pilha, pTopo); 
         return 1;
 
     } else {
-        printf("ERRO 001 - Instrução Inválida\n\n");
+        printf("Linha %d ERRO 001 - Instrucao Invalida ",numLinha);
+        puts(inst);
         return 1;
     }
 
@@ -311,6 +335,10 @@ int operacoes(int pilha[], int *pTopo, int registradores[], char inst[], char nu
 }
 
 
+void toUpperCase(char* c) {
+    if ('a' <= *c && *c <= 'z')
+        *c += 'A' - 'a';
+}
 
 
 

@@ -1,9 +1,9 @@
 //Soma os 2 primeiros elementos da pilha
-int ADD(int pilha[], int *pTopo)
+int ADD(int pilha[], int *pTopo, int numLinha)
 {
     if(*pTopo < 1) 
     {
-        printf("ERRO 005 - Operando insuficientes para realizar a soma.\n");
+        printf("Linha %d ERRO 005 - Operando insuficientes para realizar a soma.\n", numLinha);
         return 1;
     }
     else {
@@ -13,11 +13,11 @@ int ADD(int pilha[], int *pTopo)
 
 
 //Faz o Topo da pilha menos o proximo elemento
-int SUB(int pilha[], int *pTopo)
+int SUB(int pilha[], int *pTopo, int numLinha)
 {
     if(*pTopo < 1) 
     {
-        printf("ERRO 005 - Operando insuficientes para realizar a subtracao.\n");
+        printf("Linha %d ERRO 005 - Operando insuficientes para realizar a subtracao.\n", numLinha);
         return 1;
     }
     else {
@@ -27,11 +27,11 @@ int SUB(int pilha[], int *pTopo)
 
 
 //Multiplica os 2 primeiros elementos da pilha
-int MUL(int pilha[], int *pTopo)
+int MUL(int pilha[], int *pTopo, int numLinha)
 {
     if(*pTopo < 1) 
     {
-        printf("ERRO 005 - Operando insuficientes para realizar a multiplicacao.\n");
+        printf("Linha %d ERRO 005 - Operando insuficientes para realizar a multiplicacao.\n", numLinha);
         return 1;
     }
     else {
@@ -40,11 +40,11 @@ int MUL(int pilha[], int *pTopo)
 }
 
 //Faz o Topo da pilha divido o proximo elemento
-int DIV(int pilha[], int *pTopo)
+int DIV(int pilha[], int *pTopo, int numLinha)
 {
     if(*pTopo < 1) 
     {
-        printf("ERRO 005 - Operando insuficientes para realizar a divisao.\n");
+        printf("Linha %d ERRO 005 - Operando insuficientes para realizar a divisao.\n", numLinha);
         return 1;
     }
     else {
@@ -54,11 +54,11 @@ int DIV(int pilha[], int *pTopo)
 }
 
 //Faz o módulo do Topo da pilha pelo proximo elemento
-int MOD(int pilha[], int *pTopo)
+int MOD(int pilha[], int *pTopo, int numLinha)
 {
     if(*pTopo < 1) 
     {
-        printf("ERRO 005 - Operando insuficientes para realizar o modulo.\n");
+        printf("Linha %d ERRO 005 - Operando insuficientes para realizar o modulo.\n", numLinha);
         return 1;
     }
     else {

@@ -8,7 +8,7 @@ typedef struct structPilha{
 
 
 
-void InicializaPilha (PILHA *Topo);
+void InicializaPilha (PILHA **Topo);
 int Vazia (PILHA *Topo);
 void ImprimirPilha (PILHA *Topo);
 PILHA* PushPilha (PILHA *Topo, int Dado);
@@ -18,9 +18,9 @@ PILHA* DestroiPilha (PILHA *Topo);
 
 
 
-void InicializaPilha (PILHA *Topo)
+void InicializaPilha (PILHA **Topo)
 {
-    return NULL;
+    *Topo = NULL;
 }
 
 

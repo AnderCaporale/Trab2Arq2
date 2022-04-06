@@ -1,3 +1,5 @@
+#include "logicas.h"
+#include <stdio.h>
 
 //Transforma um numero decimal para binario (sinal magnitude)
 void decToBin(int num, int bin[])
@@ -35,7 +37,7 @@ int binToDec(int vetor[]){
 
 
 //Transforma o numero para binario de depois troca os 1 e 0s
-int NOT(int pilha[], int *pTopo){
+int NOT(int pilha[], const int *pTopo){
 
     int vetor[16];
     decToBin(pilha[*pTopo], vetor);
@@ -53,7 +55,7 @@ int NOT(int pilha[], int *pTopo){
 
 
 //Transforma o numero para binario de depois inverte a sequencia
-int MIR(int pilha[], int *pTopo){
+int MIR(int pilha[], const int *pTopo){
 
     int vetor[16], aux[16], i,j;
     decToBin(pilha[*pTopo], vetor);
@@ -72,7 +74,7 @@ int MIR(int pilha[], int *pTopo){
 
 
 //Transforma os 2 primeiros numeros da pilha pra binario e faz o OR entre eles
-int OR(int pilha[], int *pTopo){
+int OR(int pilha[], const int *pTopo){
 
     int primeiro[16], segundo[16], i, aux[16];
 
@@ -91,7 +93,7 @@ int OR(int pilha[], int *pTopo){
 }
 
 //Transforma os 2 primeiros numeros da pilha pra binario e faz o AND entre eles
-int AND(int pilha[], int *pTopo){
+int AND(int pilha[], const int *pTopo){
 
     int primeiro[16], segundo[16], i, aux[16];
 

@@ -1,9 +1,13 @@
+#include "aritmeticas.h"
+#include <stdio.h>
+#include "erro.h"
+
 //Soma os 2 primeiros elementos da pilha
-int ADD(int pilha[], int *pTopo, int numLinha)
+int ADD(int pilha[], const int *pTopo, int numLinha)
 {
     if(*pTopo < 1) 
     {
-        printf("Linha %d ERRO 005 - Operando insuficientes para realizar a soma.\n", numLinha);
+        ERROR(ERROR_NOT_ENOUGH_OPERANDS_FOR_ADDITION);
         return 1;
     }
     else {
@@ -13,11 +17,11 @@ int ADD(int pilha[], int *pTopo, int numLinha)
 
 
 //Faz o Topo da pilha menos o proximo elemento
-int SUB(int pilha[], int *pTopo, int numLinha)
+int SUB(int pilha[], const int *pTopo, int numLinha)
 {
     if(*pTopo < 1) 
     {
-        printf("Linha %d ERRO 005 - Operando insuficientes para realizar a subtracao.\n", numLinha);
+        ERROR(ERROR_NOT_ENOUGH_OPERANDS_FOR_SUBTRACTION);
         return 1;
     }
     else {
@@ -27,11 +31,11 @@ int SUB(int pilha[], int *pTopo, int numLinha)
 
 
 //Multiplica os 2 primeiros elementos da pilha
-int MUL(int pilha[], int *pTopo, int numLinha)
+int MUL(const int pilha[], const int *pTopo, int numLinha)
 {
     if(*pTopo < 1) 
     {
-        printf("Linha %d ERRO 005 - Operando insuficientes para realizar a multiplicacao.\n", numLinha);
+        ERROR(ERROR_NOT_ENOUGH_OPERANDS_FOR_MULTIPLICATION);
         return 1;
     }
     else {
@@ -40,11 +44,11 @@ int MUL(int pilha[], int *pTopo, int numLinha)
 }
 
 //Faz o Topo da pilha divido o proximo elemento
-int DIV(int pilha[], int *pTopo, int numLinha)
+int DIV(const int pilha[], const int *pTopo, int numLinha)
 {
     if(*pTopo < 1) 
     {
-        printf("Linha %d ERRO 005 - Operando insuficientes para realizar a divisao.\n", numLinha);
+        ERROR(ERROR_NOT_ENOUGH_OPERANDS_FOR_DIVISION);
         return 1;
     }
     else {
@@ -54,11 +58,11 @@ int DIV(int pilha[], int *pTopo, int numLinha)
 }
 
 //Faz o módulo do Topo da pilha pelo proximo elemento
-int MOD(int pilha[], int *pTopo, int numLinha)
+int MOD(const int pilha[], const int *pTopo, int numLinha)
 {
     if(*pTopo < 1) 
     {
-        printf("Linha %d ERRO 005 - Operando insuficientes para realizar o modulo.\n", numLinha);
+        ERROR(ERROR_NOT_ENOUGH_OPERANDS_FOR_MODULO);
         return 1;
     }
     else {

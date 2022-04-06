@@ -8,6 +8,8 @@
 #include "controle.c"
 #include "saidas.c"
 
+int operacoes(int pilha[], int *pTopo, int *pRegistrador, char inst[], char num[]);
+void trataInst (char linha[], char inst[], char num[], int i);
 
 int main()
 {
@@ -79,7 +81,7 @@ int operacoes(int pilha[], int *pTopo, int *pRegistrador, char inst[], char num[
     int valor;
 
     if (strcmp("ADD", inst) == 0){
-        *pRegistrador = ADD(pilha, pTopo);  //Faz a soma e salva no registrador
+        *pRegistrador = ADD(pilha, pTopo, 0);  //Faz a soma e salva no registrador
 
     } else if(strcmp("SUB", inst) == 0){
         //printf("Fazer subtracao\n");

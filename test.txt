@@ -1,0 +1,20 @@
+; MOV #2,$r1
+push 100
+push 0
+add
+mov $r0,$r1
+pop
+pop
+
+;
+push $r1
+push 0
+jeq 30 ; JMP done
+pop
+out
+push -1
+add
+mov $r0,$r1
+pop
+pop
+jmp 10

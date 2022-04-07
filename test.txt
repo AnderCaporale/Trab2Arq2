@@ -6,10 +6,10 @@ mov $r0,$r1
 pop
 pop
 
-;
+:reset
 push $r1
 push 0
-jeq 30 ; JMP done
+jeq done
 pop
 out
 push -1
@@ -17,4 +17,5 @@ add
 mov $r0,$r1
 pop
 pop
-jmp 10
+jmp reset
+:done

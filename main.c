@@ -9,10 +9,11 @@
 #include "saidas.h"
 #include "linhas.h"
 #include "erro.h"
+#include "rotulos.h"
+#include "salto.h"
 
-int operacoes(int pilha[], int *pTopo, int registradores[], char inst[], char num[], int *pc);
 
-void limpaEntrada(char inst[], char num[]);
+int operacoes(int pilha[], int *pTopo, int registradores[], char inst[], char num[], int *pc, Rotulos rotulos);
 
 void trataInst(char linha[], char inst[], char num[]);
 
@@ -25,11 +26,8 @@ int main() {
 
     int menu = 0;
 
-    char letra;
     int numLinha;
-    int i;
-    int PeV;
-    char linha[25], num[10], inst[10];
+    char num[10], inst[10];
     char nomeArquivo[20];
     int registradores[5];
 
@@ -41,8 +39,6 @@ int main() {
             registradores[k] = 0;
 
         // Resetar variaveis de leitura
-        i = 0;
-        PeV = 0;
         numLinha = 1;
 
         // Mostrar o menu
@@ -65,7 +61,7 @@ int main() {
 
                 //Trata a instrucao
                 trataInst(entrada, inst, num);
-                if (operacoes(pilha, pTopo, registradores, inst, num, &numLinha)) {
+                if (operacoes(pilha, pTopo, registradores, inst, num, &numLinha, NULL)) {
                     printf("\n\nFinalizado com erro.\n\n");
                     break;
                 }
@@ -91,14 +87,28 @@ int main() {
             char **linhas = readLines(file, &quantidadeDeLinhas);
             int pc = 0;
 
-            while (pc < quantidadeDeLinhas) {
+            Rotulos rotulos = criarRotulos();
+            int abortarOperacao = 0;
+
+            for (int i = 0; i < quantidadeDeLinhas; ++i) {
+                if (linhas[i][0] == ':') {
+                    if (!registrarRotulos(rotulos, linhas[i] + 1, i)) {
+                        ERROR(ERROR_LABEL_ALREADY_DEFINED);
+                        printf(" (%s)", linhas[i] + 1);
+                        abortarOperacao = 1;
+                        break;
+                    }
+                }
+            }
+
+            while (!abortarOperacao && pc < quantidadeDeLinhas) {
                 if (strlen(linhas[pc]) == 0) {
                     pc++;
                     continue;
                 }
 
                 trataInst(linhas[pc], inst, num);
-                if (operacoes(pilha, pTopo, registradores, inst, num, &pc)) {
+                if (operacoes(pilha, pTopo, registradores, inst, num, &pc, rotulos)) {
                     printf("\n\nFinalizado com erro.\n\n");
                     menu = -1;
                     break;
@@ -110,25 +120,19 @@ int main() {
                 free(linhas[j]);
             free(linhas);
 
+            // Livrar a memória dos rótulos
+            destruirRotulos(&rotulos);
+
+            // Fechar o arquivo
             fclose(file);
 
-            printf("\nFIM DO ARQUIVO\n");
-            printf("Programa finalizado.\n\n");
+            printf("\nFIM DO ARQUIVO\n\n");
         } else if (menu == 3) {
             printf("\nPrograma Encerrado\n");
             return 0;
         } else {
             printf("Escolha uma das opcoes acima.\n\n");
         }
-    }
-}
-
-void limpaEntrada(char inst[], char num[]) {
-    int i;
-
-    for (i = 0; i < 16; i++) {
-        inst[i] = '\0';
-        num[i] = '\0';
     }
 }
 
@@ -168,11 +172,13 @@ void trataInst(char linha[], char inst[], char num[]) {
     num[numIndex] = '\0';  //Coloca um fim de linha no ultimo caractere do numero ou registrador
 }
 
-int operacoes(int pilha[], int *pTopo, int registradores[], char inst[], char num[], int *pc) {
+int operacoes(int pilha[], int *pTopo, int registradores[], char inst[], char num[], int *pc, Rotulos rotulos) {
     int numLinha = (*pc) + 1;
     int valor;
 
-    if (strcmp("ADD", inst) == 0) {
+    if (inst[0] == ':') { // Ignorar rotulos
+
+    } else if (strcmp("ADD", inst) == 0) {
         if (num[0] != '\0') {
             ERROR(ERROR_UNEXPECTED_ARGUMENT);
             return 1;
@@ -333,138 +339,15 @@ int operacoes(int pilha[], int *pTopo, int registradores[], char inst[], char nu
         printf("Programa Encerrado");
         return 1;
     } else if (strcmp("JMP", inst) == 0) {
-        if (num[0] == '\0') {
-            ERROR(ERROR_EXPECTED_1_ARGUMENT);
-            return 1;
-        }
-
-        int i = 0;
-        valor = 0;
-
-        if (!('0' <= num[0] && num[0] <= '9')) {
-            ERROR(ERROR_INVALID_ARGUMENT);
-            return 1;
-        }
-
-        while ('0' <= num[i] && num[i] <= '9') {
-            valor = 10 * valor + (num[i] - '0');
-            i++;
-        }
-
-        *pc = valor - 1;
-        return 0;
+        return JUMP(num, pc, rotulos, numLinha);
     } else if (strcmp("JEQ", inst) == 0) {
-        if (num[0] == '\0') {
-            ERROR(ERROR_EXPECTED_1_ARGUMENT);
-            return 1;
-        }
-
-        if (!('0' <= num[0] && num[0] <= '9')) {
-            ERROR(ERROR_INVALID_ARGUMENT);
-            return 1;
-        }
-
-        if (*pTopo + 1 < 2) {
-            ERROR(ERROR_NOT_ENOUGH_OPERANDS_FOR_COMPARISON);
-            return 1;
-        }
-
-        if (pilha[*pTopo] == pilha[*pTopo-1]) {
-            int i = 0;
-            valor = 0;
-
-            while ('0' <= num[i] && num[i] <= '9') {
-                valor = 10 * valor + (num[i] - '0');
-                i++;
-            }
-
-            *pc = valor - 1;
-            return 0;
-        }
+        return JUMP_IF_EQUALS(pilha, pTopo, num, pc, rotulos, numLinha);
     } else if (strcmp("JNE", inst) == 0) {
-        if (num[0] == '\0') {
-            ERROR(ERROR_EXPECTED_1_ARGUMENT);
-            return 1;
-        }
-
-        if (!('0' <= num[0] && num[0] <= '9')) {
-            ERROR(ERROR_INVALID_ARGUMENT);
-            return 1;
-        }
-
-        if (*pTopo + 1 < 2) {
-            ERROR(ERROR_NOT_ENOUGH_OPERANDS_FOR_COMPARISON);
-            return 1;
-        }
-
-        if (pilha[*pTopo] != pilha[*pTopo-1]) {
-            int i = 0;
-            valor = 0;
-
-            while ('0' <= num[i] && num[i] <= '9') {
-                valor = 10 * valor + (num[i] - '0');
-                i++;
-            }
-
-            *pc = valor - 1;
-            return 0;
-        }
+        return JUMP_IF_NOT_EQUALS(pilha, pTopo, num, pc, rotulos, numLinha);
     } else if (strcmp("JGT", inst) == 0) {
-        if (num[0] == '\0') {
-            ERROR(ERROR_EXPECTED_1_ARGUMENT);
-            return 1;
-        }
-
-        if (!('0' <= num[0] && num[0] <= '9')) {
-            ERROR(ERROR_INVALID_ARGUMENT);
-            return 1;
-        }
-
-        if (*pTopo + 1 < 2) {
-            ERROR(ERROR_NOT_ENOUGH_OPERANDS_FOR_COMPARISON);
-            return 1;
-        }
-
-        if (pilha[*pTopo] > pilha[*pTopo-1]) {
-            int i = 0;
-            valor = 0;
-
-            while ('0' <= num[i] && num[i] <= '9') {
-                valor = 10 * valor + (num[i] - '0');
-                i++;
-            }
-
-            *pc = valor - 1;
-            return 0;
-        }
-    } else if (strcmp("JGT", inst) == 0) {
-        if (num[0] == '\0') {
-            ERROR(ERROR_EXPECTED_1_ARGUMENT);
-            return 1;
-        }
-
-        if (!('0' <= num[0] && num[0] <= '9')) {
-            ERROR(ERROR_INVALID_ARGUMENT);
-            return 1;
-        }
-
-        if (*pTopo + 1 < 2) {
-            ERROR(ERROR_NOT_ENOUGH_OPERANDS_FOR_COMPARISON);
-            return 1;
-        }
-
-        if (pilha[*pTopo] < pilha[*pTopo-1]) {
-            int i = 0;
-            valor = 0;
-
-            while ('0' <= num[i] && num[i] <= '9') {
-                valor = 10 * valor + (num[i] - '0');
-                i++;
-            }
-
-            *pc = valor - 1;
-            return 0;
-        }
+        return JUMP_IF_GREATER_THAN(pilha, pTopo, num, pc, rotulos, numLinha);
+    } else if (strcmp("JLT", inst) == 0) {
+        return JUMP_IF_LOWER_THAN(pilha, pTopo, num, pc, rotulos, numLinha);
     } else {
         ERROR(ERROR_INVALID_INSTRUCTION);
         printf(" (\"%s\")", inst);

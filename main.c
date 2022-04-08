@@ -12,6 +12,8 @@
 #include "rotulos.h"
 #include "salto.h"
 
+#define DEBUG 0
+#define TEXT_BUFFER_SIZE 100
 
 int operacoes(int pilha[], int *pTopo, int registradores[], char inst[], char num[], int *pc, Rotulos rotulos);
 
@@ -27,7 +29,7 @@ int main() {
     int menu = 0;
 
     int numLinha;
-    char num[10], inst[10];
+    char inst[TEXT_BUFFER_SIZE], num[TEXT_BUFFER_SIZE];
     char nomeArquivo[20];
     int registradores[5];
 
@@ -175,6 +177,11 @@ void trataInst(char linha[], char inst[], char num[]) {
 int operacoes(int pilha[], int *pTopo, int registradores[], char inst[], char num[], int *pc, Rotulos rotulos) {
     int numLinha = (*pc) + 1;
     int valor;
+
+#if DEBUG
+    printf("%d - %s %s\n", numLinha, inst, num);
+    fflush(stdout);
+#endif
 
     if (inst[0] == ':') { // Ignorar rotulos
 
@@ -348,6 +355,12 @@ int operacoes(int pilha[], int *pTopo, int registradores[], char inst[], char nu
         return JUMP_IF_GREATER_THAN(pilha, pTopo, num, pc, rotulos, numLinha);
     } else if (strcmp("JLT", inst) == 0) {
         return JUMP_IF_LOWER_THAN(pilha, pTopo, num, pc, rotulos, numLinha);
+    } else if (strcmp("BREAKPOINT", inst) == 0) {
+        stack(pilha, pTopo);
+        regs(registradores);
+        fflush(stdout);
+        fflush(stdin);
+        getchar();
     } else {
         ERROR(ERROR_INVALID_INSTRUCTION);
         printf(" (\"%s\")", inst);

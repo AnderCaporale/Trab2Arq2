@@ -1,0 +1,94 @@
+push 1 ; 1st prime
+
+; mov Nth prime to $r3
+push 0
+add
+mov $r0,$r3
+pop
+pop
+
+; mov #1,$r1
+push 0
+push 1
+add
+mov $r0,$r1
+pop
+pop
+
+; mov #2,$r2
+push 0
+push 2
+add
+mov $r0,$r2
+pop
+pop
+
+:loop
+push 2 ; k = 2
+
+:inner_loop
+push $r2
+jlt prime
+jeq prime
+pop
+
+push $r2
+mod
+pop
+push $r0
+push 0
+jeq not_prime
+pop
+pop
+
+; k++
+push 1
+add
+pop
+pop
+push $r0
+
+jmp inner_loop
+
+:not_prime
+pop
+pop
+pop
+
+:inc_p
+; p++
+push $r2
+push 1
+add
+mov $r0,$r2
+pop
+pop
+
+jmp loop
+
+:prime
+pop
+pop
+
+push $r1
+push $r3
+JEQ done
+pop
+pop
+
+; n++
+push $r1
+push 1
+add
+mov $r0,$r1
+pop
+pop
+
+jmp inc_p
+
+
+:done
+pop
+pop
+push $r2
+out

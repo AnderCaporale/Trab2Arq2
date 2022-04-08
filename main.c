@@ -51,6 +51,7 @@ int main() {
         fflush(stdout);
         scanf("%d", &menu);
         fflush(stdin);
+        printf("\n");
 
         if (menu == 1) {
             while (1) {
@@ -76,6 +77,7 @@ int main() {
 
             // Lê o arquivo
             printf("Digite o nome do arquivo: ");
+            fflush(stdout);
             scanf("%s", nomeArquivo);
             file = fopen(nomeArquivo, "r");
 
@@ -130,7 +132,7 @@ int main() {
 
             printf("\nFIM DO ARQUIVO\n\n");
         } else if (menu == 3) {
-            printf("\nPrograma Encerrado\n");
+            printf("Programa Encerrado\n");
             return 0;
         } else {
             printf("Escolha uma das opcoes acima.\n\n");

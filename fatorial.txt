@@ -1,0 +1,36 @@
+push 5
+
+push 0
+add
+mov $r0, $r1
+pop
+pop
+
+push 1
+
+:loop
+push $r1
+mul
+pop
+pop
+push $r0
+
+push $r1
+push 1
+jeq done
+pop
+pop
+
+push $r1
+push -1
+add
+mov $r0,$r1
+pop
+pop
+
+jmp loop
+
+:done
+pop
+pop
+out

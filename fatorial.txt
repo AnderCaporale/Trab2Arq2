@@ -1,8 +1,8 @@
-push 5
+push 5          ;n que será calculado o fatorial
 
 push 0
 add
-mov $r0, $r1
+mov $r0, $r1    ;salva n do fatorial em $R1
 pop
 pop
 
@@ -10,25 +10,25 @@ push 1
 
 :loop
 push $r1
-mul
+mul             ;n * (n-1)
 pop
 pop
-push $r0
+push $r0        ;armazena a multiplicação na pilha
 
 push $r1
 push 1
-jeq done
+jeq done        ;caso chegue na multiplicaçao por 1 (final), acaba
 pop
 pop
 
 push $r1
 push -1
-add
+add 	        ;decrementa n para a próxima multiplicação
 mov $r0,$r1
 pop
 pop
 
-jmp loop
+jmp loop        ;repete o loop da multiplicação
 
 :done
 pop

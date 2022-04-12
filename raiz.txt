@@ -3,6 +3,7 @@
 ;Xn+1 = (1 / 2) * (Xn + (A / Xn))
 ;Primeira iteração: Xn = chute inicial
 ;Outras iterações Xn = resultado iteração anterior
+;A = valor para calcular a raíz quadrada
 
 PUSH 100        ;número que quer a raiz quadrada -> A
 PUSH 0

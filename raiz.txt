@@ -1,44 +1,48 @@
 ;Método de Newton Raphson
 
-PUSH 100        ;Número que quer a raiz quadrada
+;Xn+1 = (1 / 2) * (Xn + (A / Xn))
+;Primeira iteração: Xn = chute inicial
+;Outras iterações Xn = resultado iteração anterior
+
+PUSH 100        ;número que quer a raiz quadrada -> A
 PUSH 0
 ADD
 POP
 POP
-MOV $R0, $R2
+MOV $R0, $R2    ;coloca A em $R2
 
 
-PUSH 3
+PUSH 3          ;coloca o chute inicial na pilha
 PUSH $R2
-DIV
+DIV             ;(A / Xn)
 POP
 POP
 PUSH $R0
 PUSH 3
-ADD
+ADD             ;(Xn + (A / Xn))
 POP
 POP
 PUSH 2
 PUSH $R0
-DIV
+DIV             ;(Xn + (A / Xn)) / 2           
 POP
 POP
-MOV $R0, $R1
+MOV $R0, $R1    ;salva resultado primeira iteração em $R1    
 
 
-PUSH $R1
-PUSH $R2
-DIV
+PUSH $R1        ;coloca resultado da iteração anterior na pilha    
+PUSH $R2        
+DIV             ;(A / Xn)          
 POP
 POP
 PUSH $R1
 PUSH $R0
-ADD
+ADD             ;(Xn + (A / Xn))
 POP
 POP
 PUSH 2
 PUSH $R0
-DIV
+DIV             ;(Xn + (A / Xn)) / 2  
 POP
 POP
 MOV $R0,$R1

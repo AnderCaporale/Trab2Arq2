@@ -1,3 +1,9 @@
+; Encontra n-ésimo termo: AN = A1 + (N - 1) * R
+; Soma dos n termos: SN = ((A1 + AN) / 2) * N
+;A1 = termo inicial
+;N = número de termos
+;R = razão
+
 PUSH 0
 PUSH 2          ;A1
 ADD
